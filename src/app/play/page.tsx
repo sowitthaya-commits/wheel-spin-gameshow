@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useGameSync } from '../../hooks/useGameSync';
 import { PlayerSelector } from '../../components/player/PlayerSelector';
 import { SpinButton } from '../../components/player/SpinButton';
@@ -16,7 +17,9 @@ export default function PlayerPage() {
     triggerSpin,
   } = useGameSync();
 
+  const router = useRouter();
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   // Restore player selection from localStorage
   useEffect(() => {
@@ -54,9 +57,23 @@ export default function PlayerPage() {
     hasActivePrizes;
 
   const handleSpinClick = async () => {
-    if (!canSpin || !myPlayer) return;
-    await triggerSpin(myPlayer.id, myPlayer.name, 'MANUAL');
+    if (!canSpin || !myPlayer || isRedirecting) return;
+    setIsRedirecting(true);
+    try {
+      await triggerSpin(myPlayer.id, myPlayer.name, 'MANUAL');
+      router.push('/');
+    } catch (err) {
+      console.error('Failed to trigger spin:', err);
+      setIsRedirecting(false);
+    }
   };
+
+  // If the wheel is spinning for this player, ensure redirect to stage screen
+  useEffect(() => {
+    if (isMyTurn && gameState.status === 'SPINNING') {
+      router.push('/');
+    }
+  }, [isMyTurn, gameState.status, router]);
 
   // Remaining time calculation
   const remainingSec = gameState.status === 'COUNTDOWN' && gameState.timerEndTimestamp
