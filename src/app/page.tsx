@@ -109,10 +109,12 @@ export default function StagePage() {
   };
 
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-between p-4 overflow-hidden">
-      {/* Background radial spotlights */}
-      <div className="absolute -top-32 left-1/2 -translate-x-1/2 h-96 w-[700px] rounded-full bg-stage-purple/30 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 h-80 w-80 rounded-full bg-gold/10 blur-3xl pointer-events-none" />
+    <main className="relative flex min-h-screen flex-col items-center justify-between p-4 overflow-hidden bg-stage-bg">
+      {/* Background Cinematic Golden Lights & Flares (Reference Image Style) */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[680px] w-[680px] rounded-full bg-gradient-radial from-amber-500/20 via-gold/10 to-transparent blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-0 right-0 h-44 -translate-y-1/2 bg-gradient-to-r from-transparent via-amber-500/15 to-transparent blur-2xl pointer-events-none" />
+      <div className="absolute -top-24 left-1/2 -translate-x-1/2 h-80 w-[900px] rounded-full bg-gold/15 blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-amber-600/10 blur-[80px] pointer-events-none" />
 
       {/* Header */}
       <StageHeader

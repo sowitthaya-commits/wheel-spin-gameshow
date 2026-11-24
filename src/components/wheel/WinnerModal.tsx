@@ -36,13 +36,13 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
           ...defaults,
           particleCount,
           origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-          colors: ['#FFD700', '#FF2E63', '#08D9D6', '#FFFFFF'],
+          colors: ['#FFE57F', '#FFD700', '#F5B041', '#FFFFFF', '#D4AF37'],
         });
         confetti({
           ...defaults,
           particleCount,
           origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-          colors: ['#FFD700', '#FF2E63', '#08D9D6', '#FFFFFF'],
+          colors: ['#FFE57F', '#FFD700', '#F5B041', '#FFFFFF', '#D4AF37'],
         });
       }, 250);
 
@@ -53,8 +53,8 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-300">
-      <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border-4 border-gold bg-gradient-to-b from-stage-purple via-stage-card to-stage-dark p-8 text-center shadow-[0_0_80px_rgba(245,176,65,0.7)] animate-in zoom-in-95 duration-300">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 animate-in fade-in duration-300">
+      <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border-4 border-gold-bright bg-gradient-to-b from-black via-stage-card to-black p-8 text-center shadow-[0_0_90px_rgba(245,176,65,0.85)] animate-in zoom-in-95 duration-300">
         {/* Close Button */}
         <button
           onClick={onClose}

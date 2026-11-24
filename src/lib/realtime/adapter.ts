@@ -46,12 +46,12 @@ export const DEFAULT_CONFIG: GameConfig = {
 };
 
 export const DEFAULT_SLICES: SliceItem[] = [
-  { id: 'slice_1', label: 'iPhone 16 Pro', color: '#FF2E63', percentage: 5, stock: 1, wonCount: 0 },
-  { id: 'slice_2', label: 'Gift Voucher 1,000฿', color: '#08D9D6', percentage: 15, stock: 5, wonCount: 0 },
-  { id: 'slice_3', label: 'AirPods 4', color: '#F08A5D', percentage: 10, stock: 2, wonCount: 0 },
-  { id: 'slice_4', label: 'Gift Voucher 500฿', color: '#B83B5E', percentage: 25, stock: 10, wonCount: 0 },
-  { id: 'slice_5', label: 'Starbucks Card 200฿', color: '#00ADB5', percentage: 20, stock: 15, wonCount: 0 },
-  { id: 'slice_6', label: 'Lucky Keychain', color: '#F38181', percentage: 25, stock: 50, wonCount: 0 },
+  { id: 'slice_1', label: 'JACKPOT: iPhone 16', color: '#141418', percentage: 5, stock: 1, wonCount: 0 },
+  { id: 'slice_2', label: 'Voucher 1,000฿', color: '#E5A912', percentage: 15, stock: 5, wonCount: 0 },
+  { id: 'slice_3', label: 'AirPods 4', color: '#F97316', percentage: 10, stock: 2, wonCount: 0 },
+  { id: 'slice_4', label: 'Voucher 500฿', color: '#9333EA', percentage: 25, stock: 10, wonCount: 0 },
+  { id: 'slice_5', label: 'Starbucks Card', color: '#10B981', percentage: 20, stock: 15, wonCount: 0 },
+  { id: 'slice_6', label: 'Lucky Keychain', color: '#EC4899', percentage: 25, stock: 50, wonCount: 0 },
 ];
 
 export const DEFAULT_PLAYERS: PlayerItem[] = [

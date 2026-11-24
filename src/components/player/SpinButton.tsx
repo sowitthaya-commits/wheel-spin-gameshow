@@ -73,17 +73,17 @@ export const SpinButton: React.FC<SpinButtonProps> = ({
         onClick={handlePress}
         disabled={!canSpin}
         aria-label="กดหมุน / SPIN"
-        className="group relative flex h-48 w-48 sm:h-56 sm:w-56 items-center justify-center rounded-full border-4 border-white/60 bg-gradient-to-tr from-red-600 via-rose-500 to-amber-400 text-white shadow-[0_0_60px_rgba(244,63,94,0.75)] active:scale-95 transition-all duration-150 hover:scale-105 hover:shadow-[0_0_90px_rgba(244,63,94,1)] animate-bounce"
+        className="group relative flex h-48 w-48 sm:h-56 sm:w-56 items-center justify-center rounded-full border-4 border-gold-bright bg-gradient-to-tr from-gold-deep via-gold to-gold-bright text-stage-dark shadow-[0_0_65px_rgba(245,176,65,0.85)] active:scale-95 transition-all duration-150 hover:scale-105 hover:shadow-[0_0_90px_rgba(255,235,127,1)] animate-bounce"
       >
         {/* Glowing inner ripple */}
-        <div className="absolute inset-2 rounded-full border-2 border-white/40 bg-white/10 backdrop-blur-xs pointer-events-none" />
+        <div className="absolute inset-2 rounded-full border-2 border-white/60 bg-gradient-to-b from-white/30 to-black/20 pointer-events-none" />
 
-        <div className="flex flex-col items-center justify-center text-center z-10">
-          <Play className="h-14 w-14 sm:h-16 sm:w-16 fill-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] ml-1" />
-          <span className="text-2xl sm:text-3xl font-black uppercase tracking-wider drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+        <div className="flex flex-col items-center justify-center text-center z-10 text-stage-dark">
+          <Play className="h-14 w-14 sm:h-16 sm:w-16 fill-stage-dark drop-shadow-[0_2px_8px_rgba(255,255,255,0.6)] ml-1" />
+          <span className="text-2xl sm:text-3xl font-black uppercase tracking-wider drop-shadow-[0_1px_4px_rgba(255,255,255,0.8)]">
             SPIN!
           </span>
-          <span className="text-xs font-bold text-white/90 drop-shadow mt-0.5">
+          <span className="text-xs font-black tracking-wide uppercase drop-shadow mt-0.5">
             กดหมุนเลย
           </span>
         </div>

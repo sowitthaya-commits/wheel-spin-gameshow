@@ -26,25 +26,25 @@ export const StageHeader: React.FC<StageHeaderProps> = ({
             className="h-12 w-auto max-w-[160px] object-contain drop-shadow-[0_0_15px_rgba(245,176,65,0.5)]"
           />
         ) : (
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-7 w-7 text-gold animate-spin" />
-            <h1 className="text-2xl sm:text-3xl font-black tracking-wider bg-gradient-to-r from-gold-light via-gold to-yellow-500 bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+          <div className="flex items-center gap-2.5">
+            <Sparkles className="h-7 w-7 text-gold-bright animate-spin" />
+            <h1 className="text-2xl sm:text-3xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-gold-light via-gold-bright to-gold-dark drop-shadow-[0_0_20px_rgba(245,176,65,0.8)]">
               {gameTitle || 'LUCKY SPIN SHOW'}
             </h1>
           </div>
         )}
       </div>
 
-      {/* Active Player Marquee Banner */}
-      <div className="flex items-center gap-3 rounded-full border-2 border-gold/70 bg-stage-card/90 px-6 py-2 shadow-[0_0_25px_rgba(245,176,65,0.35)] backdrop-blur-md">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gold/20 text-gold">
-          <User className="h-5 w-5" />
+      {/* Active Player Marquee Banner with Luxury Black & Gold Glow */}
+      <div className="flex items-center gap-3.5 rounded-full border-2 border-gold/80 bg-black/85 px-6 py-2.5 shadow-[0_0_30px_rgba(245,176,65,0.45)] backdrop-blur-xl">
+        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-gold-dark to-gold-bright text-stage-dark shadow-md">
+          <User className="h-5 w-5 fill-stage-dark" />
         </div>
         <div className="flex flex-col text-left">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-gold-light/80">
-            ผู้เล่นรอบนี้ / Active Player
+          <span className="text-[10px] font-black uppercase tracking-widest text-gold-light/90 drop-shadow">
+            ผู้เล่นรอบนี้ / ACTIVE PLAYER
           </span>
-          <span className="text-lg sm:text-xl font-extrabold text-white tracking-wide">
+          <span className="text-lg sm:text-xl font-black text-white tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
             {activePlayerName || 'ยังไม่ได้เลือกผู้เล่น'}
           </span>
         </div>
