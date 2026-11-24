@@ -71,7 +71,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
     return (
       <div className="flex items-center gap-3 rounded-2xl border border-white/20 bg-stage-card/80 px-6 py-2.5 backdrop-blur-md shadow-xl">
         <Timer className="h-6 w-6 text-gold" />
-        <span className="font-mono text-3xl font-black text-white tracking-widest">
+        <span suppressHydrationWarning className="font-mono text-3xl font-black text-white tracking-widest">
           {pad(minutes)}:{pad(seconds)}
         </span>
         {isHoldManual && (
@@ -95,7 +95,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
             : 'border-gold bg-stage-purple/80 text-gold shadow-[0_0_25px_rgba(245,176,65,0.4)]'
         }`}
       >
-        <span className="font-mono text-5xl sm:text-6xl font-black tracking-tighter">
+        <span suppressHydrationWarning className="font-mono text-5xl sm:text-6xl font-black tracking-tighter">
           {pad(remainingSec)}
         </span>
       </div>
