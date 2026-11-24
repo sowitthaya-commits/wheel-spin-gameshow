@@ -61,4 +61,16 @@ describe('Stage Display Components', () => {
     expect(getByText('LUCKY SPIN SHOW')).toBeDefined();
     expect(getByText(/คุณสมชาย/i)).toBeDefined();
   });
+
+  it('renders stage header with game title even when logoUrl is provided', () => {
+    const { getByText, getByAltText } = render(
+      <StageHeader
+        gameTitle="LUCKY SPIN SHOW"
+        logoUrl="https://example.com/logo.png"
+        activePlayerName="คุณสมชาย"
+      />
+    );
+    expect(getByText('LUCKY SPIN SHOW')).toBeDefined();
+    expect(getByAltText('LUCKY SPIN SHOW')).toBeDefined();
+  });
 });

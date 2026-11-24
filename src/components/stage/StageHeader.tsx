@@ -16,23 +16,22 @@ export const StageHeader: React.FC<StageHeaderProps> = ({
 }) => {
   return (
     <header className="flex w-full flex-col items-center justify-between gap-4 py-4 px-6 md:flex-row max-w-7xl mx-auto">
-      {/* Game Brand / Logo */}
-      <div className="flex items-center gap-3">
-        {logoUrl ? (
+      {/* Game Brand / Logo & Title */}
+      <div className="flex items-center gap-3.5">
+        {logoUrl && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={logoUrl}
-            alt={gameTitle}
-            className="h-12 w-auto max-w-[160px] object-contain drop-shadow-[0_0_15px_rgba(245,176,65,0.5)]"
+            alt={gameTitle || 'Game Logo'}
+            className="h-12 w-auto max-w-[140px] object-contain drop-shadow-[0_0_15px_rgba(245,176,65,0.5)]"
           />
-        ) : (
-          <div className="flex items-center gap-2.5">
-            <Sparkles className="h-7 w-7 text-gold-bright animate-spin" />
-            <h1 className="text-2xl sm:text-3xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-gold-light via-gold-bright to-gold-dark drop-shadow-[0_0_20px_rgba(245,176,65,0.8)]">
-              {gameTitle || 'LUCKY SPIN SHOW'}
-            </h1>
-          </div>
         )}
+        <div className="flex items-center gap-2.5">
+          {!logoUrl && <Sparkles className="h-7 w-7 text-gold-bright animate-spin" />}
+          <h1 className="text-2xl sm:text-3xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-gold-light via-gold-bright to-gold-dark drop-shadow-[0_0_20px_rgba(245,176,65,0.8)]">
+            {gameTitle || 'LUCKY SPIN SHOW'}
+          </h1>
+        </div>
       </div>
 
       {/* Active Player Marquee Banner with Luxury Black & Gold Glow */}
