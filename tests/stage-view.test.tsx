@@ -62,8 +62,8 @@ describe('Stage Display Components', () => {
     expect(getByText(/คุณสมชาย/i)).toBeDefined();
   });
 
-  it('renders stage header with game title even when logoUrl is provided', () => {
-    const { getByText, getByAltText } = render(
+  it('renders stage header with only game title without logo image even when logoUrl is provided', () => {
+    const { getByText, queryByRole } = render(
       <StageHeader
         gameTitle="LUCKY SPIN SHOW"
         logoUrl="https://example.com/logo.png"
@@ -71,6 +71,6 @@ describe('Stage Display Components', () => {
       />
     );
     expect(getByText('LUCKY SPIN SHOW')).toBeDefined();
-    expect(getByAltText('LUCKY SPIN SHOW')).toBeDefined();
+    expect(queryByRole('img')).toBeNull();
   });
 });
