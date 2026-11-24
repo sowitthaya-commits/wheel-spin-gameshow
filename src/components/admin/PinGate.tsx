@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Lock, KeyRound, AlertCircle } from 'lucide-react';
+import Link from 'next/link';
+import { Lock, KeyRound, AlertCircle, ArrowLeft } from 'lucide-react';
 
 interface PinGateProps {
   correctPin: string;
@@ -68,9 +69,15 @@ export const PinGate: React.FC<PinGateProps> = ({ correctPin, onUnlock }) => {
           </button>
         </form>
 
-        <p className="mt-4 text-[11px] text-white/40">
-          รหัสเริ่มต้นคือ <span className="font-mono text-gold">1234</span> (หรือตามที่ตั้งใน ENV)
-        </p>
+        <div className="mt-6 pt-4 border-t border-white/10">
+          <Link
+            href="/"
+            className="inline-flex items-center justify-center gap-2 text-xs font-semibold text-white/60 hover:text-gold transition py-1"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>ย้อนกลับไปหน้าหลัก (Main Stage)</span>
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -42,6 +42,7 @@ export interface GameState {
   isHoldManual: boolean;
   timerEndTimestamp: number;
   remainingSecWhenPaused: number;
+  isPaused?: boolean;
   spinData: SpinData | null;
 }
 

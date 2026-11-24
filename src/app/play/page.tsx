@@ -76,9 +76,10 @@ export default function PlayerPage() {
   }, [isMyTurn, gameState.status, router]);
 
   // Remaining time calculation
+  const isPaused = Boolean(gameState.isPaused && (gameState.remainingSecWhenPaused ?? 0) > 0);
   const remainingSec = gameState.status === 'COUNTDOWN' && gameState.timerEndTimestamp
     ? Math.max(0, Math.floor((gameState.timerEndTimestamp - Date.now()) / 1000))
-    : 0;
+    : (isPaused ? gameState.remainingSecWhenPaused : 0);
 
   return (
     <main className="flex min-h-dvh flex-col items-center justify-between p-4 max-w-md mx-auto text-center select-none">
@@ -119,13 +120,18 @@ export default function PlayerPage() {
             />
 
             {/* Turn & Status Indicator */}
-            {gameState.status === 'COUNTDOWN' && (
+            {(gameState.status === 'COUNTDOWN' || isPaused) && (
               <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 backdrop-blur-md">
                 <span className="text-xs font-semibold text-white/80">เวลารอบนี้:</span>
                 <span className="font-mono text-base font-extrabold text-gold">
                   {remainingSec}s
                 </span>
-                {gameState.isHoldManual && (
+                {isPaused && (
+                  <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-300">
+                    หยุดเวลาชั่วคราว
+                  </span>
+                )}
+                {gameState.isHoldManual && !isPaused && (
                   <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-300">
                     รอผู้เล่น
                   </span>

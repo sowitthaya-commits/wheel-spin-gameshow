@@ -38,6 +38,19 @@ describe('Stage Display Components', () => {
     expect(getByText(/รอผู้เล่นกดหมุน/i)).toBeDefined();
   });
 
+  it('displays paused countdown time when isPaused is true during IDLE', () => {
+    const { getByText } = render(
+      <TimerDisplay
+        remainingSec={42}
+        status="IDLE"
+        isHoldManual={false}
+        isPaused={true}
+      />
+    );
+    expect(getByText(/หยุดเวลาชั่วคราว/i)).toBeDefined();
+    expect(getByText('42')).toBeDefined();
+  });
+
   it('renders stage header with game title and active player name', () => {
     const { getByText } = render(
       <StageHeader

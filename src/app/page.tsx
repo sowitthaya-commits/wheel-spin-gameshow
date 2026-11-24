@@ -129,6 +129,7 @@ export default function StagePage() {
           remainingSec={remainingSec}
           status={gameState.status}
           isHoldManual={gameState.isHoldManual}
+          isPaused={Boolean(gameState.isPaused)}
         />
       </div>
 

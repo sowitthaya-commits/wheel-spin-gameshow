@@ -27,6 +27,87 @@ describe('Admin Control Panel Components', () => {
     expect(onUnlock).toHaveBeenCalled();
   });
 
+  it('PinGate does not reveal default password and provides back to main stage link', () => {
+    const { queryByText, getByRole } = render(
+      <PinGate correctPin="1234" onUnlock={vi.fn()} />
+    );
+
+    // Should NOT show default password hints
+    expect(queryByText(/รหัสเริ่มต้น/i)).toBeNull();
+    expect(queryByText(/1234/i)).toBeNull();
+
+    // Should provide a link back to main stage
+    const backLink = getByRole('link', { name: /หน้าหลัก|Stage/i });
+    expect(backLink).toBeDefined();
+    expect(backLink.getAttribute('href')).toBe('/');
+  });
+
+  it('LiveControlTab handles pause and resume', () => {
+    const onPauseTimer = vi.fn();
+    const onResumeTimer = vi.fn();
+
+    const countdownState: GameState = {
+      status: 'COUNTDOWN',
+      activePlayerId: 'p1',
+      isHoldManual: false,
+      timerEndTimestamp: Date.now() + 45000,
+      remainingSecWhenPaused: 0,
+      spinData: null,
+    };
+
+    const { getByRole, rerender, getByText } = render(
+      <LiveControlTab
+        gameState={countdownState}
+        players={[{ id: 'p1', name: 'คุณสมชาย' }]}
+        onSelectActivePlayer={vi.fn()}
+        onStartTimer={vi.fn()}
+        onPauseTimer={onPauseTimer}
+        onResumeTimer={onResumeTimer}
+        onResetTimer={vi.fn()}
+        onToggleHoldManual={vi.fn()}
+        onForceSpin={vi.fn()}
+        onClearWinner={vi.fn()}
+      />
+    );
+
+    // Click pause while countdown is active
+    const pauseButton = getByRole('button', { name: /หยุดชั่วคราว|Pause/i });
+    fireEvent.click(pauseButton);
+    expect(onPauseTimer).toHaveBeenCalled();
+
+    // Re-render as paused with 42s remaining
+    const pausedState: GameState = {
+      ...countdownState,
+      status: 'IDLE',
+      isPaused: true,
+      timerEndTimestamp: 0,
+      remainingSecWhenPaused: 42,
+    };
+
+    rerender(
+      <LiveControlTab
+        gameState={pausedState}
+        players={[{ id: 'p1', name: 'คุณสมชาย' }]}
+        onSelectActivePlayer={vi.fn()}
+        onStartTimer={vi.fn()}
+        onPauseTimer={onPauseTimer}
+        onResumeTimer={onResumeTimer}
+        onResetTimer={vi.fn()}
+        onToggleHoldManual={vi.fn()}
+        onForceSpin={vi.fn()}
+        onClearWinner={vi.fn()}
+      />
+    );
+
+    // Should show paused status badge with remaining time
+    expect(getByText(/หยุดเวลาชั่วคราว.*42/i)).toBeDefined();
+
+    // Click resume button
+    const resumeButton = getByRole('button', { name: /นับเวลาต่อ|Resume/i });
+    fireEvent.click(resumeButton);
+    expect(onResumeTimer).toHaveBeenCalled();
+  });
+
   it('LiveControlTab allows toggling Hold Mode and Starting Timer', () => {
     const onToggleHold = vi.fn();
     const onStartTimer = vi.fn();

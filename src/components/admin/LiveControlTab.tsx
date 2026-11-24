@@ -20,6 +20,7 @@ interface LiveControlTabProps {
   onSelectActivePlayer: (playerId: string) => void;
   onStartTimer: (durationSec?: number) => void;
   onPauseTimer: () => void;
+  onResumeTimer?: () => void;
   onResetTimer: () => void;
   onToggleHoldManual: () => void;
   onForceSpin: () => void;
@@ -32,6 +33,7 @@ export const LiveControlTab: React.FC<LiveControlTabProps> = ({
   onSelectActivePlayer,
   onStartTimer,
   onPauseTimer,
+  onResumeTimer,
   onResetTimer,
   onToggleHoldManual,
   onForceSpin,
@@ -41,6 +43,7 @@ export const LiveControlTab: React.FC<LiveControlTabProps> = ({
   const [customSec, setCustomSec] = useState(0);
 
   const activePlayer = players.find(p => p.id === gameState.activePlayerId);
+  const isPaused = Boolean(gameState.isPaused && (gameState.remainingSecWhenPaused ?? 0) > 0);
 
   const handleStartWithCustom = () => {
     const totalSec = customMin * 60 + customSec;
@@ -89,17 +92,24 @@ export const LiveControlTab: React.FC<LiveControlTabProps> = ({
         {/* Status Badge */}
         <div className="flex flex-wrap items-center gap-3 mb-6">
           <span className="text-xs text-white/60">สถานะเกมปัจจุบัน:</span>
-          <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider ${
-            gameState.status === 'SPINNING'
-              ? 'bg-gold/20 text-gold border border-gold animate-pulse'
-              : gameState.status === 'COUNTDOWN'
-              ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-              : gameState.status === 'RESULT'
-              ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-              : 'bg-white/10 text-white/70 border border-white/20'
-          }`}>
-            {gameState.status}
-          </span>
+          {isPaused ? (
+            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">
+              <Pause className="h-3.5 w-3.5" />
+              <span>หยุดเวลาชั่วคราว (เหลือ {gameState.remainingSecWhenPaused} วินาที)</span>
+            </span>
+          ) : (
+            <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider ${
+              gameState.status === 'SPINNING'
+                ? 'bg-gold/20 text-gold border border-gold animate-pulse'
+                : gameState.status === 'COUNTDOWN'
+                ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                : gameState.status === 'RESULT'
+                ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                : 'bg-white/10 text-white/70 border border-white/20'
+            }`}>
+              {gameState.status}
+            </span>
+          )}
 
           {gameState.isHoldManual && (
             <span className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
@@ -160,12 +170,26 @@ export const LiveControlTab: React.FC<LiveControlTabProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {/* Start / Resume */}
           <button
-            onClick={handleStartWithCustom}
+            onClick={() => {
+              if (isPaused) {
+                if (onResumeTimer) {
+                  onResumeTimer();
+                } else {
+                  onStartTimer(gameState.remainingSecWhenPaused);
+                }
+              } else {
+                handleStartWithCustom();
+              }
+            }}
             disabled={gameState.status === 'SPINNING'}
             className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 py-3.5 px-4 font-bold text-white shadow-lg hover:brightness-110 active:scale-95 disabled:opacity-50 transition"
           >
             <Play className="h-5 w-5 fill-white" />
-            <span>เริ่มนับเวลา (Start)</span>
+            <span>
+              {isPaused
+                ? `นับเวลาต่อ (Resume: ${gameState.remainingSecWhenPaused}s)`
+                : 'เริ่มนับเวลา (Start)'}
+            </span>
           </button>
 
           {/* Pause */}

@@ -2,20 +2,36 @@
 
 import React from 'react';
 import { GameStatus } from '../../types/game';
-import { Timer, Clock, AlertCircle } from 'lucide-react';
+import { Timer, Clock, AlertCircle, Pause } from 'lucide-react';
 
 interface TimerDisplayProps {
   remainingSec: number;
   status: GameStatus;
   isHoldManual: boolean;
+  isPaused?: boolean;
 }
 
 export const TimerDisplay: React.FC<TimerDisplayProps> = ({
   remainingSec,
   status,
   isHoldManual,
+  isPaused,
 }) => {
   if (status === 'IDLE') {
+    if (isPaused && remainingSec > 0) {
+      const minutes = Math.floor(remainingSec / 60);
+      const seconds = remainingSec % 60;
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      return (
+        <div className="flex items-center gap-3 rounded-full border-2 border-amber-500/60 bg-black/90 px-7 py-2 backdrop-blur-xl shadow-[0_0_30px_rgba(251,191,36,0.5)] animate-pulse">
+          <Pause className="h-5 w-5 text-amber-400" />
+          <span className="text-sm font-bold text-amber-300">หยุดเวลาชั่วคราว:</span>
+          <span className="font-mono text-2xl font-black text-gold" suppressHydrationWarning>
+            {minutes > 0 ? `${pad(minutes)}:${pad(seconds)}` : `${pad(seconds)}`}
+          </span>
+        </div>
+      );
+    }
     return (
       <div className="flex items-center gap-2 rounded-full border border-gold/40 bg-black/80 px-6 py-2 backdrop-blur-xl shadow-[0_0_20px_rgba(245,176,65,0.25)]">
         <Clock className="h-5 w-5 text-gold-bright" />

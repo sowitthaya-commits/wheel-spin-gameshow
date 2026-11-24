@@ -66,5 +66,6 @@ export const DEFAULT_GAME_STATE: GameState = {
   isHoldManual: false,
   timerEndTimestamp: 0,
   remainingSecWhenPaused: 60,
+  isPaused: false,
   spinData: null,
 };

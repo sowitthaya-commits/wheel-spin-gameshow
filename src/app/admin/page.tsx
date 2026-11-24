@@ -73,17 +73,34 @@ export default function AdminPage() {
     const timerEndTimestamp = Date.now() + duration * 1000;
     await updateGameState({
       status: 'COUNTDOWN',
+      isPaused: false,
       timerEndTimestamp,
       remainingSecWhenPaused: duration,
     });
   };
 
   const handlePauseTimer = async () => {
-    const remaining = Math.max(0, Math.floor((gameState.timerEndTimestamp - Date.now()) / 1000));
+    if (gameState.status === 'COUNTDOWN') {
+      const remaining = Math.max(0, Math.floor((gameState.timerEndTimestamp - Date.now()) / 1000));
+      await updateGameState({
+        status: 'IDLE',
+        isPaused: true,
+        remainingSecWhenPaused: remaining,
+        timerEndTimestamp: 0,
+      });
+    }
+  };
+
+  const handleResumeTimer = async () => {
+    const remaining = gameState.remainingSecWhenPaused > 0
+      ? gameState.remainingSecWhenPaused
+      : (config.timerDurationSec || 60);
+    const timerEndTimestamp = Date.now() + remaining * 1000;
     await updateGameState({
-      status: 'IDLE',
+      status: 'COUNTDOWN',
+      isPaused: false,
+      timerEndTimestamp,
       remainingSecWhenPaused: remaining,
-      timerEndTimestamp: 0,
     });
   };
 
@@ -91,6 +108,7 @@ export default function AdminPage() {
     const duration = config.timerDurationSec || 60;
     await updateGameState({
       status: 'IDLE',
+      isPaused: false,
       remainingSecWhenPaused: duration,
       timerEndTimestamp: 0,
     });
@@ -248,6 +266,7 @@ export default function AdminPage() {
             onSelectActivePlayer={handleSelectActivePlayer}
             onStartTimer={handleStartTimer}
             onPauseTimer={handlePauseTimer}
+            onResumeTimer={handleResumeTimer}
             onResetTimer={handleResetTimer}
             onToggleHoldManual={handleToggleHoldManual}
             onForceSpin={handleForceSpin}
