@@ -63,6 +63,9 @@ describe('Realtime Adapter - Local Demo Mode', () => {
     const initialSlices = adapterA.getSlices();
     const targetSlice = initialSlices[0];
 
+    // Must be in SPINNING state first
+    await adapterA.updateGameState({ status: 'SPINNING' });
+
     await adapterA.completeSpin(targetSlice.id, 'Somchai', 'MANUAL');
 
     const updatedSlices = adapterA.getSlices();
@@ -72,5 +75,25 @@ describe('Realtime Adapter - Local Demo Mode', () => {
     const history = adapterA.getHistory();
     expect(history.length).toBeGreaterThan(0);
     expect(history[0].playerName).toBe('Somchai');
+
+    // A secondary duplicate completeSpin from another screen must be ignored
+    await adapterA.completeSpin(targetSlice.id, 'Somchai', 'MANUAL');
+    expect(adapterA.getHistory().length).toBe(1);
+  });
+
+  it('rejects triggerSpin when status is RESULT or when all prizes are exhausted', async () => {
+    // 1. Rejected if status is RESULT
+    await adapterA.updateGameState({ status: 'RESULT' });
+    const spinInResult = await adapterA.triggerSpin('p1', 'Somchai', 'MANUAL');
+    expect(spinInResult).toBe(false);
+
+    // 2. Rejected if all prizes have 0 stock
+    await adapterA.updateGameState({ status: 'IDLE' });
+    const exhaustedSlices: SliceItem[] = [
+      { id: 's1', label: 'Item 1', color: '#111', percentage: 100, stock: 1, wonCount: 1 },
+    ];
+    await adapterA.updateSlices(exhaustedSlices);
+    const spinExhausted = await adapterA.triggerSpin('p1', 'Somchai', 'MANUAL');
+    expect(spinExhausted).toBe(false);
   });
 });

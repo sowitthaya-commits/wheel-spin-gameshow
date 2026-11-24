@@ -135,6 +135,7 @@ export default function StagePage() {
         <WheelCanvas
           slices={slices}
           spinData={gameState.spinData}
+          status={gameState.status}
           logoUrl={config.logoUrl}
           gameTitle={config.gameTitle}
           onPegTick={playPegTick}

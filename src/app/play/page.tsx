@@ -11,6 +11,7 @@ export default function PlayerPage() {
   const {
     config,
     gameState,
+    slices,
     players,
     triggerSpin,
   } = useGameSync();
@@ -44,7 +45,13 @@ export default function PlayerPage() {
   const myPlayer = players.find(p => p.id === selectedPlayerId);
   const activePlayer = players.find(p => p.id === gameState.activePlayerId);
   const isMyTurn = selectedPlayerId !== null && selectedPlayerId === gameState.activePlayerId;
-  const canSpin = isMyTurn && (gameState.status === 'COUNTDOWN' || gameState.status === 'IDLE');
+  const hasActivePrizes = slices.some(
+    s => (s.stock === -1 || s.wonCount < s.stock) && s.percentage > 0
+  );
+  const canSpin =
+    isMyTurn &&
+    (gameState.status === 'COUNTDOWN' || gameState.status === 'IDLE') &&
+    hasActivePrizes;
 
   const handleSpinClick = async () => {
     if (!canSpin || !myPlayer) return;

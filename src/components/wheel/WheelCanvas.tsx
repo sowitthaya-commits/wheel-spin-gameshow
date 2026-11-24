@@ -7,6 +7,7 @@ import { calculateSliceAngles, detectPegCrossings } from '../../lib/wheel-math';
 interface WheelCanvasProps {
   slices: SliceItem[];
   spinData: SpinData | null;
+  status?: string;
   logoUrl?: string;
   gameTitle?: string;
   onPegTick?: (speedFactor: number) => void;
@@ -17,6 +18,7 @@ interface WheelCanvasProps {
 export const WheelCanvas: React.FC<WheelCanvasProps> = ({
   slices,
   spinData,
+  status = 'IDLE',
   logoUrl,
   gameTitle = 'LUCKY SPIN',
   onPegTick,
@@ -271,7 +273,7 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
     const animate = () => {
       ledPhaseRef.current += 0.05;
 
-      if (spinData && spinData.spinId) {
+      if (status === 'SPINNING' && spinData && spinData.spinId) {
         const { startAngle, targetAngle, durationMs, startTimestamp } = spinData;
         const elapsed = Date.now() - startTimestamp;
         const progress = Math.min(1, Math.max(0, elapsed / durationMs));
@@ -303,7 +305,7 @@ export const WheelCanvas: React.FC<WheelCanvasProps> = ({
           isSpinningRef.current = true;
         }
       } else {
-        // Idle animation
+        // Idle animation with steady LED phase
         drawWheel(currentAngleRef.current, ledPhaseRef.current);
       }
 

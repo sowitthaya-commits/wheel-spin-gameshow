@@ -195,7 +195,14 @@ export class LocalBroadcastChannelAdapter implements RealtimeAdapter {
   ): Promise<boolean> {
     // Re-check latest state from storage for atomic lock
     const latestState = this.loadFromStorage('gameState', this.gameState);
-    if (latestState.status === 'SPINNING') {
+    if (latestState.status !== 'COUNTDOWN' && latestState.status !== 'IDLE') {
+      return false;
+    }
+
+    const activeSlices = this.slices.filter(
+      s => (s.stock === -1 || s.wonCount < s.stock) && s.percentage > 0
+    );
+    if (activeSlices.length === 0) {
       return false;
     }
 
@@ -235,6 +242,12 @@ export class LocalBroadcastChannelAdapter implements RealtimeAdapter {
     playerName: string,
     triggeredBy: 'MANUAL' | 'AUTO'
   ): Promise<void> {
+    // Only proceed if currently in SPINNING state (prevents multi-screen duplicate completion)
+    const latestState = this.loadFromStorage('gameState', this.gameState);
+    if (latestState.status !== 'SPINNING') {
+      return;
+    }
+
     // Find winner slice
     const slice = this.slices.find(s => s.id === winnerSliceId);
     const prizeLabel = slice ? slice.label : 'Prize';

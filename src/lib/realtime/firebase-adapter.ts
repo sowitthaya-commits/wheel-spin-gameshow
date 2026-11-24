@@ -160,6 +160,13 @@ export class FirebaseRealtimeAdapter implements RealtimeAdapter {
     playerName: string,
     triggeredBy: 'MANUAL' | 'AUTO'
   ): Promise<boolean> {
+    const activeSlices = this.slices.filter(
+      s => (s.stock === -1 || s.wonCount < s.stock) && s.percentage > 0
+    );
+    if (activeSlices.length === 0) {
+      return false;
+    }
+
     const winningSlice = selectWinningSlice(this.slices);
     const startAngle = this.gameState.spinData?.targetAngle || 0;
     const targetAngle = calculateTargetAngle(startAngle, winningSlice.id, this.slices, 8);
@@ -180,8 +187,11 @@ export class FirebaseRealtimeAdapter implements RealtimeAdapter {
     const stateRef = ref(this.db, 'gameState');
 
     await runTransaction(stateRef, (currentState: GameState | null) => {
-      if (!currentState || currentState.status === 'SPINNING') {
-        // Abort transaction if already spinning
+      if (
+        !currentState ||
+        (currentState.status !== 'COUNTDOWN' && currentState.status !== 'IDLE')
+      ) {
+        // Abort transaction if not in ready state
         return;
       }
       didSucceed = true;
@@ -201,6 +211,10 @@ export class FirebaseRealtimeAdapter implements RealtimeAdapter {
     playerName: string,
     triggeredBy: 'MANUAL' | 'AUTO'
   ): Promise<void> {
+    if (this.gameState.status !== 'SPINNING') {
+      return;
+    }
+
     const slice = this.slices.find(s => s.id === winnerSliceId);
     const prizeLabel = slice ? slice.label : 'Prize';
 
