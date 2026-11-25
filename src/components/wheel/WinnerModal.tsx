@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { Trophy, Sparkles, X } from 'lucide-react';
+import { Trophy, Sparkles, X, Clock } from 'lucide-react';
 
 interface WinnerModalProps {
   isOpen: boolean;
@@ -17,8 +17,22 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
   prizeLabel,
   onClose,
 }) => {
+  const [cooldown, setCooldown] = useState<number>(5);
+
   useEffect(() => {
     if (isOpen) {
+      setCooldown(5);
+
+      const timer = setInterval(() => {
+        setCooldown(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
       // Fire festive fireworks confetti
       const duration = 3.5 * 1000;
       const animationEnd = Date.now() + duration;
@@ -46,19 +60,35 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
         });
       }, 250);
 
-      return () => clearInterval(interval);
+      return () => {
+        clearInterval(timer);
+        clearInterval(interval);
+      };
+    } else {
+      setCooldown(5);
     }
   }, [isOpen]);
 
   if (!isOpen) return null;
 
+  const handleSafeClose = () => {
+    if (cooldown === 0) {
+      onClose();
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 animate-in fade-in duration-300">
       <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border-4 border-gold-bright bg-gradient-to-b from-black via-stage-card to-black p-8 text-center shadow-[0_0_90px_rgba(245,176,65,0.85)] animate-in zoom-in-95 duration-300">
-        {/* Close Button */}
+        {/* Close Button (X) - Disabled during 5s cooldown */}
         <button
-          onClick={onClose}
-          className="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white/70 hover:bg-white/20 hover:text-white transition"
+          onClick={handleSafeClose}
+          disabled={cooldown > 0}
+          className={`absolute right-4 top-4 rounded-full p-2 transition ${
+            cooldown > 0
+              ? 'opacity-20 cursor-not-allowed text-white/30'
+              : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white'
+          }`}
           aria-label="Close"
         >
           <X className="h-6 w-6" />
@@ -89,12 +119,24 @@ export const WinnerModal: React.FC<WinnerModalProps> = ({
           </p>
         </div>
 
-        {/* Action Button */}
+        {/* Action Button with 5s Cooldown */}
         <button
-          onClick={onClose}
-          className="mt-8 w-full rounded-2xl bg-gradient-to-r from-gold-dark via-gold to-gold-light py-4 text-xl font-bold text-stage-dark shadow-[0_0_30px_rgba(245,176,65,0.6)] hover:brightness-110 active:scale-95 transition"
+          onClick={handleSafeClose}
+          disabled={cooldown > 0}
+          className={`mt-8 w-full flex items-center justify-center gap-2 rounded-2xl py-4 text-xl font-bold transition-all duration-200 select-none ${
+            cooldown > 0
+              ? 'bg-white/10 text-white/40 cursor-not-allowed border border-white/10'
+              : 'bg-gradient-to-r from-gold-dark via-gold to-gold-light text-stage-dark shadow-[0_0_30px_rgba(245,176,65,0.7)] hover:brightness-110 active:scale-95'
+          }`}
         >
-          ตกลง / ปิดหน้าต่าง
+          {cooldown > 0 ? (
+            <>
+              <Clock className="h-5 w-5 animate-pulse" />
+              <span>ฉลองชัยชนะ... (ปิดได้ใน {cooldown} วิ)</span>
+            </>
+          ) : (
+            <span>ตกลง / ปิดหน้าต่าง</span>
+          )}
         </button>
       </div>
     </div>

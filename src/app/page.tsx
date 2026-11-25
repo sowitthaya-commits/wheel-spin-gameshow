@@ -32,6 +32,7 @@ export default function StagePage() {
   });
 
   const [isWinnerModalOpen, setIsWinnerModalOpen] = useState<boolean>(false);
+  const [isDismissedLocally, setIsDismissedLocally] = useState<boolean>(false);
   const lastBeepSecondRef = useRef<number>(-1);
   const hasTriggeredAutoSpinRef = useRef<boolean>(false);
 
@@ -100,20 +101,20 @@ export default function StagePage() {
     );
   };
 
-  const handleCloseWinnerModal = async () => {
+  const handleCloseWinnerModal = () => {
+    // Approach 2: Dismiss locally on this device only!
+    // Does NOT broadcast status: IDLE to Firebase, so the Main Stage display stays open.
+    setIsDismissedLocally(true);
     setIsWinnerModalOpen(false);
-    await updateGameState({
-      status: 'IDLE',
-      remainingSecWhenPaused: config.timerDurationSec || 60,
-    });
   };
 
   // Sync WinnerModal with real-time gameState:
   // When status is NOT 'RESULT' (e.g. IDLE from Admin click, or COUNTDOWN/SPINNING from next round),
-  // automatically close the winner modal across ALL screens immediately.
+  // automatically close the winner modal across ALL screens immediately and reset local dismissal.
   useEffect(() => {
     if (gameState.status !== 'RESULT') {
       setIsWinnerModalOpen(false);
+      setIsDismissedLocally(false);
     } else {
       setIsWinnerModalOpen(true);
     }
@@ -160,7 +161,7 @@ export default function StagePage() {
 
       {/* Winner Celebration Modal */}
       <WinnerModal
-        isOpen={isWinnerModalOpen && gameState.status === 'RESULT'}
+        isOpen={isWinnerModalOpen && !isDismissedLocally && gameState.status === 'RESULT'}
         playerName={gameState.spinData?.playerName || activePlayerName}
         prizeLabel={gameState.spinData?.winningLabel || 'รางวัล'}
         onClose={handleCloseWinnerModal}
