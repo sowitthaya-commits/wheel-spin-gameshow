@@ -108,6 +108,17 @@ export default function StagePage() {
     });
   };
 
+  // Sync WinnerModal with real-time gameState:
+  // When status is NOT 'RESULT' (e.g. IDLE from Admin click, or COUNTDOWN/SPINNING from next round),
+  // automatically close the winner modal across ALL screens immediately.
+  useEffect(() => {
+    if (gameState.status !== 'RESULT') {
+      setIsWinnerModalOpen(false);
+    } else {
+      setIsWinnerModalOpen(true);
+    }
+  }, [gameState.status]);
+
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-between p-4 overflow-hidden bg-stage-bg">
       {/* Background Cinematic Golden Lights & Flares (Reference Image Style) */}
@@ -149,7 +160,7 @@ export default function StagePage() {
 
       {/* Winner Celebration Modal */}
       <WinnerModal
-        isOpen={isWinnerModalOpen || gameState.status === 'RESULT'}
+        isOpen={isWinnerModalOpen && gameState.status === 'RESULT'}
         playerName={gameState.spinData?.playerName || activePlayerName}
         prizeLabel={gameState.spinData?.winningLabel || 'รางวัล'}
         onClose={handleCloseWinnerModal}
@@ -159,30 +170,35 @@ export default function StagePage() {
       <AudioControls />
 
       {/* Footer Navigation Links */}
-      <footer className="w-full flex items-center justify-between py-3 px-6 text-xs text-white/50 border-t border-white/10 max-w-7xl mx-auto z-10">
-        <div className="flex items-center gap-2">
-          <span className="inline-block h-2 w-2 rounded-full bg-green-400 animate-pulse" />
-          <span>Real-time Sync Active</span>
-        </div>
+      <footer className="w-full flex flex-col sm:flex-row items-center justify-between py-3 px-6 text-xs text-white/50 border-t border-white/10 max-w-7xl mx-auto z-10 gap-3">
+        {/* Left Side: Real-time Sync & Quick Nav Links (Safe from AudioControls) */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 mr-2">
+            <span className="inline-block h-2 w-2 rounded-full bg-green-400 animate-pulse" />
+            <span className="font-medium text-white/70">Real-time Sync Active</span>
+          </div>
 
-        <div className="flex items-center gap-4">
           <Link
             href="/play"
             target="_blank"
-            className="flex items-center gap-1.5 text-white/70 hover:text-gold transition font-medium"
+            className="flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-3.5 py-1.5 text-gold-light hover:bg-gold/20 hover:border-gold transition font-bold shadow-sm"
           >
-            <Smartphone className="h-4 w-4" />
+            <Smartphone className="h-3.5 w-3.5 text-green-400" />
             <span>จอมือถือผู้เล่น (/play)</span>
           </Link>
+
           <Link
             href="/admin"
             target="_blank"
-            className="flex items-center gap-1.5 text-white/70 hover:text-gold transition font-medium"
+            className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-white/85 hover:text-white hover:border-white/40 transition font-bold shadow-sm"
           >
-            <Shield className="h-4 w-4" />
+            <Shield className="h-3.5 w-3.5 text-blue-400" />
             <span>แผงควบคุมแอดมิน (/admin)</span>
           </Link>
         </div>
+
+        {/* Right Side Spacer: Ensures floating AudioControls at bottom-right never covers any link */}
+        <div className="hidden sm:block w-36 h-6" />
       </footer>
     </main>
   );

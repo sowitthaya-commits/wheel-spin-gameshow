@@ -68,12 +68,12 @@ export default function PlayerPage() {
     }
   };
 
-  // If the wheel is spinning for this player, ensure redirect to stage screen
+  // When the wheel starts spinning (for anyone in the game), automatically redirect everyone to the stage screen
   useEffect(() => {
-    if (isMyTurn && gameState.status === 'SPINNING') {
+    if (gameState.status === 'SPINNING') {
       router.push('/');
     }
-  }, [isMyTurn, gameState.status, router]);
+  }, [gameState.status, router]);
 
   // Remaining time calculation
   const isPaused = Boolean(gameState.isPaused && (gameState.remainingSecWhenPaused ?? 0) > 0);
