@@ -27,15 +27,39 @@ import { selectWinningSlice, calculateTargetAngle } from '../wheel-math';
 
 export class FirebaseRealtimeAdapter implements RealtimeAdapter {
   private db: Database;
-  private config: GameConfig = DEFAULT_CONFIG;
-  private gameState: GameState = DEFAULT_GAME_STATE;
-  private slices: SliceItem[] = DEFAULT_SLICES;
-  private players: PlayerItem[] = DEFAULT_PLAYERS;
+  private config: GameConfig;
+  private gameState: GameState;
+  private slices: SliceItem[];
+  private players: PlayerItem[];
   private history: SpinHistoryLog[] = [];
 
   constructor(firebaseConfig: Record<string, string | undefined>) {
     const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
     this.db = getDatabase(app);
+    this.config = this.loadFromStorage('config', DEFAULT_CONFIG);
+    this.gameState = this.loadFromStorage('gameState', DEFAULT_GAME_STATE);
+    this.slices = this.loadFromStorage('slices', DEFAULT_SLICES);
+    this.players = this.loadFromStorage('players', DEFAULT_PLAYERS);
+    this.history = this.loadFromStorage('history', []);
+  }
+
+  private loadFromStorage<T>(key: string, defaultValue: T): T {
+    if (typeof window === 'undefined') return defaultValue;
+    try {
+      const data = window.localStorage.getItem(`wheel_${key}`);
+      return data ? JSON.parse(data) : defaultValue;
+    } catch {
+      return defaultValue;
+    }
+  }
+
+  private saveToStorage(key: string, value: unknown): void {
+    if (typeof window === 'undefined') return;
+    try {
+      window.localStorage.setItem(`wheel_${key}`, JSON.stringify(value));
+    } catch (e) {
+      console.warn('LocalStorage save failed', e);
+    }
   }
 
   getConfig(): GameConfig {
@@ -60,9 +84,11 @@ export class FirebaseRealtimeAdapter implements RealtimeAdapter {
       const val = snapshot.val();
       if (val) {
         this.config = { ...DEFAULT_CONFIG, ...val };
+        this.saveToStorage('config', this.config);
         callback(this.config);
       } else {
         set(configRef, DEFAULT_CONFIG);
+        this.saveToStorage('config', DEFAULT_CONFIG);
         callback(DEFAULT_CONFIG);
       }
     });
@@ -75,9 +101,11 @@ export class FirebaseRealtimeAdapter implements RealtimeAdapter {
       const val = snapshot.val();
       if (val) {
         this.gameState = { ...DEFAULT_GAME_STATE, ...val };
+        this.saveToStorage('gameState', this.gameState);
         callback(this.gameState);
       } else {
         set(stateRef, DEFAULT_GAME_STATE);
+        this.saveToStorage('gameState', DEFAULT_GAME_STATE);
         callback(DEFAULT_GAME_STATE);
       }
     });
@@ -93,9 +121,11 @@ export class FirebaseRealtimeAdapter implements RealtimeAdapter {
           ? val.filter(Boolean)
           : Object.values(val);
         this.slices = sliceArray;
+        this.saveToStorage('slices', this.slices);
         callback(this.slices);
       } else {
         set(slicesRef, DEFAULT_SLICES);
+        this.saveToStorage('slices', DEFAULT_SLICES);
         callback(DEFAULT_SLICES);
       }
     });
@@ -111,9 +141,11 @@ export class FirebaseRealtimeAdapter implements RealtimeAdapter {
           ? val.filter(Boolean)
           : Object.values(val);
         this.players = playerArray;
+        this.saveToStorage('players', this.players);
         callback(this.players);
       } else {
         set(playersRef, DEFAULT_PLAYERS);
+        this.saveToStorage('players', DEFAULT_PLAYERS);
         callback(DEFAULT_PLAYERS);
       }
     });
@@ -130,9 +162,11 @@ export class FirebaseRealtimeAdapter implements RealtimeAdapter {
           : Object.values(val);
         // Sort newest first
         this.history = historyArray.sort((a, b) => b.timestamp - a.timestamp);
+        this.saveToStorage('history', this.history);
         callback(this.history);
       } else {
         this.history = [];
+        this.saveToStorage('history', []);
         callback([]);
       }
     });
@@ -140,18 +174,26 @@ export class FirebaseRealtimeAdapter implements RealtimeAdapter {
   }
 
   async updateConfig(updates: Partial<GameConfig>): Promise<void> {
+    this.config = { ...this.config, ...updates };
+    this.saveToStorage('config', this.config);
     await update(ref(this.db, 'config'), updates);
   }
 
   async updateGameState(updates: Partial<GameState>): Promise<void> {
+    this.gameState = { ...this.gameState, ...updates };
+    this.saveToStorage('gameState', this.gameState);
     await update(ref(this.db, 'gameState'), updates);
   }
 
   async updateSlices(slices: SliceItem[]): Promise<void> {
+    this.slices = [...slices];
+    this.saveToStorage('slices', this.slices);
     await set(ref(this.db, 'slices'), slices);
   }
 
   async updatePlayers(players: PlayerItem[]): Promise<void> {
+    this.players = [...players];
+    this.saveToStorage('players', this.players);
     await set(ref(this.db, 'players'), players);
   }
 
@@ -253,6 +295,8 @@ export class FirebaseRealtimeAdapter implements RealtimeAdapter {
   }
 
   async resetStats(): Promise<void> {
+    this.history = [];
+    this.saveToStorage('history', []);
     await set(ref(this.db, 'history'), null);
     const resetSlices = this.slices.map(s => ({
       ...s,

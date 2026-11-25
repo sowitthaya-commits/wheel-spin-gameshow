@@ -20,6 +20,7 @@ export default function StagePage() {
     triggerSpin,
     completeSpin,
     updateGameState,
+    isReady = true,
   } = useGameSync();
 
   const { playPegTick, playCountdownBeep, playFanfare } = useSoundEngine();
@@ -129,6 +130,18 @@ export default function StagePage() {
      gameState.spinData?.spinId &&
      window.localStorage.getItem('wheel_dismissed_spin_id') === gameState.spinData.spinId)
   );
+
+  if (!isReady) {
+    return (
+      <main className="relative flex min-h-screen flex-col items-center justify-center p-4 overflow-hidden bg-stage-bg text-white">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[680px] w-[680px] rounded-full bg-gradient-radial from-amber-500/20 via-gold/10 to-transparent blur-3xl pointer-events-none" />
+        <div className="flex flex-col items-center gap-4 animate-pulse relative z-10">
+          <div className="h-14 w-14 rounded-full border-4 border-gold border-t-transparent animate-spin" />
+          <p className="text-gold font-bold text-base tracking-wider">กำลังเชื่อมต่อระบบเกมโชว์...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-between p-4 overflow-hidden bg-stage-bg">

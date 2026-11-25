@@ -38,6 +38,7 @@ export default function AdminPage() {
     updatePlayers,
     triggerSpin,
     resetStats,
+    isReady = true,
   } = useGameSync();
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -144,6 +145,17 @@ export default function AdminPage() {
   // If not authenticated, render PinGate
   if (!isAuthenticated) {
     return <PinGate correctPin={adminPin} onUnlock={() => setIsAuthenticated(true)} />;
+  }
+
+  if (!isReady) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-stage-dark text-white">
+        <div className="flex flex-col items-center gap-4 animate-pulse">
+          <div className="h-12 w-12 rounded-full border-4 border-gold border-t-transparent animate-spin" />
+          <p className="text-gold font-bold text-sm tracking-wider">กำลังโหลดข้อมูลแอดมิน...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

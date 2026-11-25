@@ -15,6 +15,7 @@ export default function PlayerPage() {
     slices,
     players,
     triggerSpin,
+    isReady = true,
   } = useGameSync();
 
   const router = useRouter();
@@ -80,6 +81,18 @@ export default function PlayerPage() {
   const remainingSec = gameState.status === 'COUNTDOWN' && gameState.timerEndTimestamp
     ? Math.max(0, Math.floor((gameState.timerEndTimestamp - Date.now()) / 1000))
     : (isPaused ? gameState.remainingSecWhenPaused : 0);
+
+  if (!isReady) {
+    return (
+      <main className="flex min-h-dvh flex-col items-center justify-center p-4 max-w-md mx-auto text-center select-none">
+        <div className="fixed inset-0 bg-radial-at-c from-stage-purple/40 via-stage-bg to-stage-dark pointer-events-none -z-10" />
+        <div className="flex flex-col items-center gap-4 animate-pulse">
+          <div className="h-12 w-12 rounded-full border-4 border-gold border-t-transparent animate-spin" />
+          <p className="text-gold font-bold text-sm tracking-wider">กำลังโหลดข้อมูลเกม...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="flex min-h-dvh flex-col items-center justify-between p-4 max-w-md mx-auto text-center select-none">

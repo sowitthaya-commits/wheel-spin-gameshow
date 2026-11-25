@@ -25,12 +25,40 @@ export function useGameSync() {
   const [players, setPlayers] = useState<PlayerItem[]>(() => adapter.getPlayers() || DEFAULT_PLAYERS);
   const [history, setHistory] = useState<SpinHistoryLog[]>(() => adapter.getHistory() || []);
   const [isFirebase] = useState<boolean>(() => isFirebaseConfigured());
+  const [isReady, setIsReady] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return true;
+    if (!isFirebaseConfigured()) return true;
+    return Boolean(
+      window.localStorage.getItem('wheel_config') &&
+      window.localStorage.getItem('wheel_players')
+    );
+  });
 
   useEffect(() => {
-    const unsubConfig = adapter.subscribeConfig(setConfig);
+    let hasConfig = false;
+    let hasPlayers = false;
+
+    const checkReady = () => {
+      if (hasConfig && hasPlayers) {
+        setIsReady(true);
+      }
+    };
+
+    const unsubConfig = adapter.subscribeConfig(cfg => {
+      hasConfig = true;
+      setConfig(cfg);
+      checkReady();
+    });
+
     const unsubState = adapter.subscribeGameState(setGameState);
     const unsubSlices = adapter.subscribeSlices(setSlices);
-    const unsubPlayers = adapter.subscribePlayers(setPlayers);
+
+    const unsubPlayers = adapter.subscribePlayers(pls => {
+      hasPlayers = true;
+      setPlayers(pls);
+      checkReady();
+    });
+
     const unsubHistory = adapter.subscribeHistory(setHistory);
 
     return () => {
@@ -83,6 +111,7 @@ export function useGameSync() {
     players,
     history,
     isFirebase,
+    isReady,
     updateConfig,
     updateGameState,
     updateSlices,
