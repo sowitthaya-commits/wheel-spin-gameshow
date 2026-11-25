@@ -75,24 +75,7 @@ export const SpinButton: React.FC<SpinButtonProps> = ({
     );
   }
 
-  // 4. It IS my turn, but status is IDLE (Admin has not started countdown timer yet)
-  if (status === 'IDLE') {
-    return (
-      <div className="flex flex-col items-center justify-center rounded-3xl border border-gold/30 bg-stage-card/90 p-8 text-center shadow-xl backdrop-blur-md max-w-sm w-full animate-in zoom-in-95">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gold/20 text-gold mb-3">
-          <Clock className="h-8 w-8 animate-pulse" />
-        </div>
-        <h3 className="text-xl font-black text-white">
-          เตรียมตัวให้พร้อม!
-        </h3>
-        <p className="text-sm text-gold mt-1.5 font-bold">
-          คุณคือผู้เล่นในรอบนี้ (รอแอดมินเริ่มนับเวลา)
-        </p>
-      </div>
-    );
-  }
-
-  // 5. My turn and COUNTDOWN active (Giant glowing button)
+  // 4. It IS my turn (COUNTDOWN or IDLE ready for spin): Giant glowing gold button!
   return (
     <div className="flex flex-col items-center justify-center w-full max-w-sm">
       <div className="flex items-center gap-1.5 text-gold-light font-bold text-sm uppercase tracking-widest mb-3 animate-pulse">

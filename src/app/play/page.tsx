@@ -53,7 +53,7 @@ export default function PlayerPage() {
   );
   const canSpin =
     isMyTurn &&
-    gameState.status === 'COUNTDOWN' &&
+    (gameState.status === 'COUNTDOWN' || gameState.status === 'IDLE') &&
     hasActivePrizes;
 
   const handleSpinClick = async () => {

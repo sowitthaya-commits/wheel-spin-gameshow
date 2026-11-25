@@ -103,24 +103,21 @@ export default function StagePage() {
 
   const handleCloseWinnerModal = () => {
     // Approach 2: Dismiss locally on this device only!
-    // Storing in sessionStorage prevents the modal from re-appearing if the user navigates between /play and /
+    // Storing in localStorage prevents the modal from re-appearing when navigating between /play and /
     setIsDismissedLocally(true);
     setIsWinnerModalOpen(false);
     if (typeof window !== 'undefined' && gameState.spinData?.spinId) {
-      window.sessionStorage.setItem('wheel_dismissed_spin_id', gameState.spinData.spinId);
+      window.localStorage.setItem('wheel_dismissed_spin_id', gameState.spinData.spinId);
     }
   };
 
   // Sync WinnerModal with real-time gameState:
   // When status is NOT 'RESULT' (e.g. IDLE from Admin click, or COUNTDOWN/SPINNING from next round),
-  // automatically close the winner modal across ALL screens immediately and reset local dismissal.
+  // automatically close the winner modal across ALL screens immediately.
   useEffect(() => {
     if (gameState.status !== 'RESULT') {
       setIsWinnerModalOpen(false);
       setIsDismissedLocally(false);
-      if (typeof window !== 'undefined') {
-        window.sessionStorage.removeItem('wheel_dismissed_spin_id');
-      }
     } else {
       setIsWinnerModalOpen(true);
     }
@@ -130,7 +127,7 @@ export default function StagePage() {
     isDismissedLocally ||
     (typeof window !== 'undefined' &&
      gameState.spinData?.spinId &&
-     window.sessionStorage.getItem('wheel_dismissed_spin_id') === gameState.spinData.spinId)
+     window.localStorage.getItem('wheel_dismissed_spin_id') === gameState.spinData.spinId)
   );
 
   return (

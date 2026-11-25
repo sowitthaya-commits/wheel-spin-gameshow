@@ -74,18 +74,20 @@ describe('Player Mobile View Components', () => {
     expect(button).toBeNull();
   });
 
-  it('displays preparing message and hides spin button when status is IDLE before timer start', () => {
-    const { getByText, queryByRole } = render(
+  it('enables SPIN button when my turn and status is IDLE for immediate manual spin', () => {
+    const onSpin = vi.fn();
+    const { getByRole } = render(
       <SpinButton
         isMyTurn={true}
-        canSpin={false}
+        canSpin={true}
         status="IDLE"
-        onSpin={vi.fn()}
+        onSpin={onSpin}
       />
     );
 
-    expect(getByText(/เตรียมตัวให้พร้อม/i)).toBeDefined();
-    const button = queryByRole('button', { name: /กดหมุน|SPIN/i });
-    expect(button).toBeNull();
+    const button = getByRole('button', { name: /กดหมุน|SPIN/i }) as HTMLButtonElement;
+    expect(button.disabled).toBe(false);
+    fireEvent.click(button);
+    expect(onSpin).toHaveBeenCalled();
   });
 });
