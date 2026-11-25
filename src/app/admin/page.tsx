@@ -66,7 +66,12 @@ export default function AdminPage() {
 
   // Live Game Handlers
   const handleSelectActivePlayer = async (playerId: string) => {
-    await updateGameState({ activePlayerId: playerId });
+    await updateGameState({
+      activePlayerId: playerId,
+      status: 'IDLE',
+      isPaused: false,
+      remainingSecWhenPaused: config.timerDurationSec || 60,
+    });
   };
 
   const handleStartTimer = async (durationSec?: number) => {

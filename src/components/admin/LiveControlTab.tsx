@@ -54,32 +54,61 @@ export const LiveControlTab: React.FC<LiveControlTabProps> = ({
     <div className="flex flex-col gap-6">
       {/* 1. Active Player Selection */}
       <div className="rounded-3xl border border-white/10 bg-stage-card/80 p-6 backdrop-blur-md shadow-xl">
-        <div className="flex items-center gap-2 text-gold font-bold text-sm uppercase tracking-wider mb-3">
-          <User className="h-5 w-5" />
-          <span>กำหนดผู้เล่นรอบปัจจุบัน (Active Turn)</span>
-        </div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+          <div className="flex items-center gap-2 text-gold font-bold text-sm uppercase tracking-wider">
+            <User className="h-5 w-5" />
+            <span>กำหนดผู้เล่นรอบปัจจุบัน (Active Turn)</span>
+          </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-4">
-          <select
-            value={gameState.activePlayerId}
-            onChange={e => onSelectActivePlayer(e.target.value)}
-            className="w-full sm:w-80 rounded-2xl border-2 border-gold/50 bg-stage-dark p-3.5 text-base font-bold text-white focus:border-gold outline-none"
-          >
-            {players.length === 0 && <option value="">(ไม่มีรายชื่อผู้เล่น)</option>}
-            {players.map(p => (
-              <option key={p.id} value={p.id} className="bg-stage-dark text-white">
-                {p.name}
-              </option>
-            ))}
-          </select>
-
-          <div className="flex items-center gap-2 text-sm text-white/70">
+          <div className="flex items-center gap-2 text-xs text-white/60">
             <span>ผู้เล่นที่ได้รับสิทธิ์หมุน:</span>
-            <span className="font-extrabold text-gold text-base">
+            <span className="font-extrabold text-gold text-sm px-3 py-1 rounded-full bg-gold/15 border border-gold/40">
               {activePlayer ? activePlayer.name : 'ยังไม่ได้เลือก'}
             </span>
           </div>
         </div>
+
+        {players.length === 0 ? (
+          <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-center text-sm text-white/50">
+            ยังไม่มีรายชื่อผู้เล่น (สามารถเพิ่มได้ที่แท็บ &ldquo;ตั้งค่าผู้เล่น&rdquo;)
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-2.5">
+            {players.map((p, index) => {
+              const isSelected = p.id === gameState.activePlayerId;
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => onSelectActivePlayer(p.id)}
+                  disabled={gameState.status === 'SPINNING'}
+                  className={`group relative flex items-center gap-2.5 px-4 py-2.5 rounded-2xl font-bold text-sm transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:pointer-events-none ${
+                    isSelected
+                      ? 'bg-gradient-to-r from-amber-400 via-gold to-yellow-400 text-stage-dark border-2 border-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.5)] font-black'
+                      : 'bg-stage-dark/90 text-white/80 border border-white/15 hover:border-gold/50 hover:bg-gold/10 hover:text-white'
+                  }`}
+                >
+                  <span
+                    className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-black transition-colors ${
+                      isSelected
+                        ? 'bg-black/20 text-stage-dark'
+                        : 'bg-white/10 text-white/60 group-hover:bg-gold/20 group-hover:text-gold'
+                    }`}
+                  >
+                    {index + 1}
+                  </span>
+                  <span>{p.name}</span>
+                  {isSelected && (
+                    <span className="flex h-2 w-2 rounded-full bg-stage-dark animate-ping" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        <p className="text-[11px] text-white/45 mt-3">
+          💡 คลิกที่ชื่อผู้เล่นเพื่อกำหนดสิทธิ์หมุนทันที ระบบจะปิดหน้าจอผลรอบก่อนหน้าและเตรียมพร้อมสำหรับรอบใหม่โดยอัตโนมัติ
+        </p>
       </div>
 
       {/* 2. Timer Setup & Hold Mode Controls */}

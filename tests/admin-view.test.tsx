@@ -146,6 +146,40 @@ describe('Admin Control Panel Components', () => {
     expect(onStartTimer).toHaveBeenCalled();
   });
 
+  it('LiveControlTab renders player selection buttons and triggers onSelectActivePlayer when clicked', () => {
+    const onSelectActivePlayer = vi.fn();
+    const sampleState: GameState = {
+      status: 'RESULT',
+      activePlayerId: 'p1',
+      isHoldManual: false,
+      timerEndTimestamp: 0,
+      remainingSecWhenPaused: 60,
+      spinData: null,
+    };
+    const samplePlayers: PlayerItem[] = [
+      { id: 'p1', name: 'คุณสมชาย' },
+      { id: 'p2', name: 'คุณสมหญิง' },
+    ];
+
+    const { getByRole } = render(
+      <LiveControlTab
+        gameState={sampleState}
+        players={samplePlayers}
+        onSelectActivePlayer={onSelectActivePlayer}
+        onStartTimer={vi.fn()}
+        onPauseTimer={vi.fn()}
+        onResetTimer={vi.fn()}
+        onToggleHoldManual={vi.fn()}
+        onForceSpin={vi.fn()}
+        onClearWinner={vi.fn()}
+      />
+    );
+
+    const player2Btn = getByRole('button', { name: /2.*คุณสมหญิง/i });
+    fireEvent.click(player2Btn);
+    expect(onSelectActivePlayer).toHaveBeenCalledWith('p2');
+  });
+
   it('PrizeSetupTab allows normalizing slice percentages', () => {
     const onNormalize = vi.fn();
     const sampleSlices: SliceItem[] = [
