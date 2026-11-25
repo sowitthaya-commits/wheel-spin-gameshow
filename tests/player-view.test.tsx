@@ -58,4 +58,34 @@ describe('Player Mobile View Components', () => {
     const button = queryByRole('button', { name: /กดหมุน|SPIN/i });
     expect(button).toBeNull();
   });
+
+  it('displays round completed message and hides spin button when status is RESULT', () => {
+    const { getByText, queryByRole } = render(
+      <SpinButton
+        isMyTurn={true}
+        canSpin={false}
+        status="RESULT"
+        onSpin={vi.fn()}
+      />
+    );
+
+    expect(getByText(/สิ้นสุดการหมุนรอบนี้/i)).toBeDefined();
+    const button = queryByRole('button', { name: /กดหมุน|SPIN/i });
+    expect(button).toBeNull();
+  });
+
+  it('displays preparing message and hides spin button when status is IDLE before timer start', () => {
+    const { getByText, queryByRole } = render(
+      <SpinButton
+        isMyTurn={true}
+        canSpin={false}
+        status="IDLE"
+        onSpin={vi.fn()}
+      />
+    );
+
+    expect(getByText(/เตรียมตัวให้พร้อม/i)).toBeDefined();
+    const button = queryByRole('button', { name: /กดหมุน|SPIN/i });
+    expect(button).toBeNull();
+  });
 });

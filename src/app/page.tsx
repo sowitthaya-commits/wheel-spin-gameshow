@@ -103,9 +103,12 @@ export default function StagePage() {
 
   const handleCloseWinnerModal = () => {
     // Approach 2: Dismiss locally on this device only!
-    // Does NOT broadcast status: IDLE to Firebase, so the Main Stage display stays open.
+    // Storing in sessionStorage prevents the modal from re-appearing if the user navigates between /play and /
     setIsDismissedLocally(true);
     setIsWinnerModalOpen(false);
+    if (typeof window !== 'undefined' && gameState.spinData?.spinId) {
+      window.sessionStorage.setItem('wheel_dismissed_spin_id', gameState.spinData.spinId);
+    }
   };
 
   // Sync WinnerModal with real-time gameState:
@@ -115,10 +118,20 @@ export default function StagePage() {
     if (gameState.status !== 'RESULT') {
       setIsWinnerModalOpen(false);
       setIsDismissedLocally(false);
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.removeItem('wheel_dismissed_spin_id');
+      }
     } else {
       setIsWinnerModalOpen(true);
     }
   }, [gameState.status]);
+
+  const isAlreadyDismissed = Boolean(
+    isDismissedLocally ||
+    (typeof window !== 'undefined' &&
+     gameState.spinData?.spinId &&
+     window.sessionStorage.getItem('wheel_dismissed_spin_id') === gameState.spinData.spinId)
+  );
 
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-between p-4 overflow-hidden bg-stage-bg">
@@ -161,7 +174,7 @@ export default function StagePage() {
 
       {/* Winner Celebration Modal */}
       <WinnerModal
-        isOpen={isWinnerModalOpen && !isDismissedLocally && gameState.status === 'RESULT'}
+        isOpen={isWinnerModalOpen && !isAlreadyDismissed && gameState.status === 'RESULT'}
         playerName={gameState.spinData?.playerName || activePlayerName}
         prizeLabel={gameState.spinData?.winningLabel || 'รางวัล'}
         onClose={handleCloseWinnerModal}

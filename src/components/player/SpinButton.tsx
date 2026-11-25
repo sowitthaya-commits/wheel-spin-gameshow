@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { GameStatus } from '../../types/game';
-import { Play, Hourglass, Sparkles, Loader2 } from 'lucide-react';
+import { Play, Hourglass, Sparkles, Loader2, Trophy, Clock } from 'lucide-react';
 
 interface SpinButtonProps {
   isMyTurn: boolean;
@@ -43,7 +43,22 @@ export const SpinButton: React.FC<SpinButtonProps> = ({
     );
   }
 
-  // 2. Not my turn
+  // 2. Result status (Round completed - waiting for next round)
+  if (status === 'RESULT') {
+    return (
+      <div className="flex flex-col items-center justify-center rounded-3xl border border-gold/40 bg-stage-card/90 p-6 text-center shadow-xl backdrop-blur-md max-w-sm w-full animate-in zoom-in-95">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gold/20 text-gold mb-2">
+          <Trophy className="h-7 w-7 text-gold animate-bounce" />
+        </div>
+        <h3 className="text-lg font-black text-white">สิ้นสุดการหมุนรอบนี้แล้ว</h3>
+        <p className="text-xs text-white/60 mt-1">
+          ระบบบันทึกผลรางวัลเรียบร้อย รอแอดมินเริ่มรอบถัดไป
+        </p>
+      </div>
+    );
+  }
+
+  // 3. Not my turn
   if (!isMyTurn) {
     return (
       <div className="flex flex-col items-center justify-center rounded-3xl border border-white/10 bg-stage-card/80 p-8 text-center shadow-xl backdrop-blur-md max-w-sm w-full">
@@ -60,7 +75,24 @@ export const SpinButton: React.FC<SpinButtonProps> = ({
     );
   }
 
-  // 3. My turn and can spin (Giant glowing button)
+  // 4. It IS my turn, but status is IDLE (Admin has not started countdown timer yet)
+  if (status === 'IDLE') {
+    return (
+      <div className="flex flex-col items-center justify-center rounded-3xl border border-gold/30 bg-stage-card/90 p-8 text-center shadow-xl backdrop-blur-md max-w-sm w-full animate-in zoom-in-95">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gold/20 text-gold mb-3">
+          <Clock className="h-8 w-8 animate-pulse" />
+        </div>
+        <h3 className="text-xl font-black text-white">
+          เตรียมตัวให้พร้อม!
+        </h3>
+        <p className="text-sm text-gold mt-1.5 font-bold">
+          คุณคือผู้เล่นในรอบนี้ (รอแอดมินเริ่มนับเวลา)
+        </p>
+      </div>
+    );
+  }
+
+  // 5. My turn and COUNTDOWN active (Giant glowing button)
   return (
     <div className="flex flex-col items-center justify-center w-full max-w-sm">
       <div className="flex items-center gap-1.5 text-gold-light font-bold text-sm uppercase tracking-widest mb-3 animate-pulse">
